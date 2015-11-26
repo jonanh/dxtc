@@ -48,7 +48,7 @@ namespace dxtc
         /// <param name="stream">Stream.</param>
         /// <param name="instance">Instance.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public static void WriteStruct<T>(this Stream stream, T instance) where T : struct
+        public static int WriteStruct<T>(this Stream stream, T instance) where T : struct
         {
             var type = typeof(T);
             var size = Marshal.SizeOf(type);
@@ -68,6 +68,8 @@ namespace dxtc
                 Marshal.Copy(ptr, buffer, 0, size);
 
                 stream.Write(buffer, 0, buffer.Length);
+
+                return buffer.Length;
             }
             finally
             {
