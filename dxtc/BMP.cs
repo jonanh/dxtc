@@ -1,10 +1,22 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.IO;
 
 namespace dxtc
 {
-    public static class BMP
+    public class BMP
     {
+        #region Fields
+
+        public BITMAPFILEHEADER fileHeader;
+
+        public BITMAPINFOHEADER infoHeader;
+
+        public BGR[] pixels;
+
+        #endregion
+
+
         // https://msdn.microsoft.com/en-us/library/windows/desktop/dd183374(v=vs.85).aspx
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -30,19 +42,24 @@ namespace dxtc
             #endregion
 
 
-            // TODO Clean this constructor
-            public BITMAPFILEHEADER(uint offset, uint width, uint height, uint size)
+            #region Constructor
+
+            public BITMAPFILEHEADER(uint pixelSize)
             {
                 this.bfType = 0x4D42;
                 this.bfReserved1 = 0;
                 this.bfReserved2 = 0;
 
-                // TODO
-                this.bfOffBits = 0;
-                this.bfSize = 0;
+                // Generate by default BMPs with the BITMAPINFOHEADER
+                this.bfOffBits = BITMAPFILEHEADER.size + BITMAPINFOHEADER.size;
+                this.bfSize = BITMAPFILEHEADER.size + BITMAPINFOHEADER.size + pixelSize;
             }
 
-            // Calculate the size of the struct using the marshalling API
+            #endregion
+
+
+            #region Calculate the size of the struct using the marshalling API
+
             public static uint size
             {
                 get
@@ -51,6 +68,8 @@ namespace dxtc
                     return (uint)Marshal.SizeOf(typeof(BITMAPFILEHEADER));
                 }
             }
+
+            #endregion
         };
 
 
@@ -221,9 +240,153 @@ namespace dxtc
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct BGR
         {
-            byte b;
-            byte g;
-            byte r;
+            public byte b;
+            public byte g;
+            public byte r;
+
+            public static implicit operator Image.Color(BGR color)
+            {
+                return new Image.Color
+                {
+                    r = color.r,
+                    g = color.g,
+                    b = color.b,
+                };
+            }
+
+            public static implicit operator BGR(Image.Color color)
+            {
+                return new Image.Color
+                {
+                    r = color.r,
+                    g = color.g,
+                    b = color.b,
+                };
+            }
         }
+
+        #region utils
+
+        private uint width
+        {
+            get
+            {
+                return (uint)infoHeader.biWidth;
+            }
+        }
+
+        private int height
+        {
+            get
+            {
+                return infoHeader.biHeight;
+            }
+        }
+
+        private BGR this[int x, int y]
+        {
+            set
+            {
+                pixels[y * width + x] = value;
+            }
+
+            get
+            {
+                return pixels[y * width + x];
+            }
+        }
+            
+        public uint bitPerPixel
+        {
+            get
+            {
+                // Hardcoded to 24
+                return 24;
+            }
+        }
+
+        // https://en.wikipedia.org/wiki/BMP_file_format#Pixel_storage
+
+        public uint rowSize
+        {
+            get
+            {
+                return (bitPerPixel * width + 31) / 4;
+            }
+        }
+
+        public uint pixelArraySize
+        {
+            get
+            {
+                return rowSize * (uint)Math.Abs(height);
+            }
+        }
+
+        public static implicit operator BMP(Image image)
+        {
+            return new BMP
+            {
+                fileHeader = new BITMAPFILEHEADER(),
+                infoHeader = new BITMAPINFOHEADER(),
+                //pixels = image.pixels,
+            };
+
+//            var image = new BMP();
+//
+//            image.fileHeader = new BITMAPFILEHEADER(image.width * image.height * 24 / 4);
+//
+//            infoHeader = new BITMAPINFOHEADER(image.width, image.height);
+//
+//            pixels = new BGR[image.width * image.height];
+        }
+
+        #endregion
+
+
+        #region parsing
+
+        public static BMP read(Stream stream)
+        {
+            var image = new BMP();
+
+            int readStream = 0;
+
+            // Read headers
+            readStream += stream.ReadStruct(out image.fileHeader);
+
+            readStream += stream.ReadStruct(out image.infoHeader);
+
+            // Ensure we jump to the offset
+
+            int seek = (int)image.fileHeader.bfOffBits - readStream;
+
+            stream.Seek(seek, SeekOrigin.Current);
+
+            // Initialize pixel matrix
+            image.pixels = new BGR[image.height * image.width];
+
+            readStream = 0;
+
+            for(var i = 0; i < image.infoHeader.biHeight; i++)
+            {
+                for(var j = 0; j < image.infoHeader.biWidth; j++)
+                {
+                    BGR color;
+
+                    readStream += stream.ReadStruct(out color);
+                }
+
+                // TODO padding
+            }
+
+            return image;
+        }
+
+        public void write(Stream stream)
+        {
+        }
+
+        #endregion
     }
 };
