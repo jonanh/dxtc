@@ -15,16 +15,16 @@ namespace dxtc
         /// </summary>
         /// <param name="x">The x coordinate.</param>
         /// <param name="y">The y coordinate.</param>
-        public Color this[uint x, uint y]
+        public Image.Color this[uint x, uint y]
         {
             set
             {
-                pixels[y * width + x] = value;
+                pixels[y * 4 + x] = value;
             }
 
             get
             {
-                return pixels[y * width + x];
+                return pixels[y * 4 + x];
             }
         }
 
@@ -32,7 +32,7 @@ namespace dxtc
         /// Gets or sets the <see cref="dxtc.Image"/> with the specified i.
         /// </summary>
         /// <param name="i">The index.</param>
-        public Color this[uint i]
+        public Image.Color this[uint i]
         {
             set
             {

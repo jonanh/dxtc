@@ -89,6 +89,7 @@ namespace dxtc.DDS
 
         public static implicit operator Image(DDS bmp)
         {
+            return null;
         }
     }
 }
