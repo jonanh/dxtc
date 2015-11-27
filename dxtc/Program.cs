@@ -12,6 +12,11 @@ namespace dxtc
             //Tests.Run();
         }
 
+        public enum FORMAT
+        {
+            BMP, DDS
+        }
+
         public static void Run(string[] args)
         {
             if (args.Length < 2)
@@ -22,48 +27,74 @@ namespace dxtc
             }
             else
             {
+                // Intermediate format
                 Image image = null;
+
+                string file1 = args[0];
+                string file2 = args[1];
+
+                // Check source and destionation formats
+                FORMAT fromFormat;
+                FORMAT toFormat;
+
+                if (file1.ToLower().Contains(".dds"))
+                {
+                    fromFormat = FORMAT.DDS;
+                }
+                else if (file1.ToLower().Contains(".bmp"))
+                {
+                    fromFormat = FORMAT.BMP;
+                }
+                else
+                {
+                    Console.WriteLine("Unknown file extension: " + file1);
+                    return;
+                }
+
+                if (file2.ToLower().Contains(".dds"))
+                {
+                    toFormat = FORMAT.DDS;
+                }
+                else if (file2.ToLower().Contains(".bmp"))
+                {
+                    toFormat = FORMAT.BMP;
+                }
+                else
+                {
+                    Console.WriteLine("Unknown file extension: " + file2);
+                    return;
+                }
+
                 try
                 {
-                    string file1 = args[0];
-                    string file2 = args[1];
-
+                    // Read into Intermediate format
                     using (var fileStream = new FileStream(file1, FileMode.Open))
                     {
-                        if (file1.ToLower().Contains(".dds"))
+                        if (fromFormat == FORMAT.DDS)
                         {
                             image = DDS.DDS.read(fileStream);
                         }
-                        else if (file1.ToLower().Contains(".bmp"))
+                        else if (fromFormat == FORMAT.BMP)
                         {
                             image = BMP.BMP.read(fileStream);
-                        }
-                        else
-                        {
-                            Console.WriteLine("Unknown file extension: " + file1);
-                            return;
                         }
 
                         fileStream.Close();
                     }
 
+                    // Save into final format
                     File.Delete(file2);
                     using (var fileStream = new FileStream(file2, FileMode.OpenOrCreate))
                     {
-                        if (file2.ToLower().Contains(".dds"))
+                        if (toFormat == FORMAT.DDS)
                         {
                             DDS.DDS dds = image;
                             dds.write(fileStream);
                         }
-                        else if (file2.ToLower().Contains(".bmp"))
+                        else if (toFormat == FORMAT.BMP)
                         {
                             BMP.BMP bmp = image;
                             bmp.write(fileStream);
-                        }
-                        else
-                        {
-                            Console.WriteLine("Unknown file extension: " + file2);
-                            return;
                         }
 
                         fileStream.Close();
@@ -71,7 +102,7 @@ namespace dxtc
                 }
                 catch (FileNotFoundException e)
                 {
-                    Console.WriteLine("File not found! " + e.Message);
+                    Console.WriteLine("File not found! " + file1);
                 }
             }
         }

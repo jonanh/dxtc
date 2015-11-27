@@ -16,6 +16,10 @@ namespace dxtc
             Tests.TestWriteBmp();
             Tests.TestDDS();
             Tests.TestColorChange();
+
+            // The command line finishes too fast on Windows
+            Console.WriteLine("Press any key");
+            Console.ReadKey();
         }
 
         public static void TestStructSizes()
