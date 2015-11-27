@@ -60,7 +60,7 @@ namespace dxtc.DDS
         #region Flags
 
         [Flags]
-        public enum Flags : UInt32
+        public enum Flags : uint
         {
             // Texture contains alpha data; dwRGBAlphaBitMask contains valid data.
             DDPF_ALPHAPIXELS = 0x1,

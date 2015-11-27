@@ -50,7 +50,7 @@ namespace dxtc.BMP
 
         #region Flags
 
-        public enum CompressionMode : UInt32
+        public enum CompressionMode : uint
         {
             BI_RGB = 0,
             BI_RLE8 = 1,

@@ -82,7 +82,7 @@ namespace dxtc.DDS
         #region Flags
 
         [Flags]
-        public enum Flags : UInt32
+        public enum Flags : uint
         {
             DDSD_CAPS = 0x1,
             DDSD_HEIGHT = 0x2,
@@ -97,7 +97,7 @@ namespace dxtc.DDS
         };
 
         [Flags]
-        public enum CAPSFlags : UInt32
+        public enum CAPSFlags : uint
         {
             //Optional; must be used on any file that contains more than one surface (a mipmap, a cubic environment map, or mipmapped volume texture).
             DDSCAPS_COMPLEX = 0x8,
