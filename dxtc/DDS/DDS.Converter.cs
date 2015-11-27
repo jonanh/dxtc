@@ -55,7 +55,7 @@ namespace dxtc.DDS
                     var block = dds[jj, ii];
 
                     // Get the color
-                    image[j, i] = block[j - jj, i - ii];
+                    image[j, i] = block[j - jj * 4, i - ii * 4];
                 }
             }
 
