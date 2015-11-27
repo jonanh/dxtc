@@ -18,13 +18,20 @@ namespace dxtc.DDS
         {
         }
 
-        public DDS(uint width, uint height)
+        public static DDS CreateDXT1(uint width, uint height)
         {
-            ddsHeader = DDS_HEADER.CreateDXT1Header(width, height);
+            // DXT1 textures should multiple of 4
+            uint _width = ((width + 3) / 4) * 4;
+            uint _height = ((height + 3) / 4) * 4;
 
-            ddsHeaderDXT10 = DDS_HEADER_DXT10.CreateDXT1Header;
+            return new DDS
+            {
+                ddsHeader = DDS_HEADER.CreateDXT1Header(_width, _height),
 
-            blocks = new DXT1Block[width * height];
+                ddsHeaderDXT10 = DDS_HEADER_DXT10.CreateDXT1Header,
+
+                blocks = new DXT1Block[_width * _height / 16],
+            };
         }
 
 
@@ -70,26 +77,27 @@ namespace dxtc.DDS
             }
         }
 
-        #endregion
-
-        public static implicit operator DDS(Image image)
+        public DXT1Block this[uint x]
         {
-            var dds = new DDS(image.width, image.height);
-
-            for(uint i = 0; i < image.height; i++)
+            get
             {
-                for(uint j = 0; j < image.width; j++)
+                var block = blocks[x];
+                if (block == null)
                 {
-                    
+                    blocks[x] = block = new DXT1Block();
                 }
+                return block;
             }
-
-            return dds;
         }
 
-        public static implicit operator Image(DDS bmp)
+        public DXT1Block this[uint x, uint y]
         {
-            return null;
+            get
+            {
+                return this[x + y * horizontalBlocks];
+            }
         }
+
+        #endregion
     }
 }

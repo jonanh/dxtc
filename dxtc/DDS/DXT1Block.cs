@@ -18,9 +18,9 @@ namespace dxtc.DDS
             if (color0 > color1)
             {
                 colors[2] = new Image.Color(
-                    Math.Round((2f * color0.r + color1.r) / 3),
-                    Math.Round((2f * color0.g + color1.g) / 3),
-                    Math.Round((2f * color0.b + color1.b) / 3));
+                    (2f * color0.r + color1.r) / 3,
+                    (2f * color0.g + color1.g) / 3,
+                    (2f * color0.b + color1.b) / 3);
 
                 colors[3] = new Image.Color(
                     (color0.r + 2f * color1.r) / 3,

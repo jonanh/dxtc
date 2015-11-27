@@ -21,8 +21,12 @@ namespace dxtc.BMP
 
             stream.Seek(seek, SeekOrigin.Current);
 
+            uint _height = image.uheight;
+            uint _width = image.width;
+            uint _size = _height * _width;
+
             // Initialize pixel matrix
-            image.pixels = new BGR[image.height * image.width];
+            image.pixels = new BGR[_size];
 
             uint imagePadding = image.padding;
 
@@ -30,9 +34,9 @@ namespace dxtc.BMP
             if (imagePadding > 0)
             {
                 uint index = 0;
-                for (uint i = 0; i < image.height; i++)
+                for (uint i = 0; i < _height; i++)
                 {
-                    for (uint j = 0; j < image.width; j++, index++)
+                    for (uint j = 0; j < _width; j++, index++)
                     {
                         BGR color;
 
@@ -49,7 +53,7 @@ namespace dxtc.BMP
             }
             else
             {
-                for (uint i = 0; i < image.height * image.width; i++)
+                for (uint i = 0; i < _size; i++)
                 {
                     BGR color;
 
@@ -75,6 +79,7 @@ namespace dxtc.BMP
             // Avoid accessing the size properties too much
             uint _height = uheight;
             uint _width = width;
+            uint _size = _height * _width;
 
             // Optimize loop if there is no adding
             if (paddingBuffer.Length > 0)
@@ -95,7 +100,7 @@ namespace dxtc.BMP
             }
             else
             {
-                for (uint i = 0; i < _height * _width; i++)
+                for (uint i = 0; i < _size; i++)
                 {
                     BGR color = this[i];
                     writeIndex += stream.WriteStruct(color);
