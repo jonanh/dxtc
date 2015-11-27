@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace dxtc
 {
-    public static class DDS
+    public class DDS
     {
         /*
          * 
@@ -477,6 +477,28 @@ namespace dxtc
         public struct Color
         {
             public Int16 value;
+
+            /*
+            public static implicit operator Image.Color(Color color)
+            {
+                return new Image.Color
+                {
+                    r = color.r,
+                    g = color.g,
+                    b = color.b,
+                };
+            }
+
+            public static implicit operator Color(Image.Color color)
+            {
+                return new Image.Color
+                {
+                    r = color.r,
+                    g = color.g,
+                    b = color.b,
+                };
+            }
+            */
         }
     }
 }
