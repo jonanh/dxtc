@@ -171,29 +171,51 @@ namespace dxtc
                 Console.WriteLine("DDS file has an incorrent height!");
             }
 
-            // Test writting and reading back
-            File.Delete("gradient.dds");
-            using (var fileStream = new FileStream("gradient.dds", FileMode.OpenOrCreate))
+            // Check reading our own written files
             {
-                dds.write(fileStream);
-
-                fileStream.Close();
-            }
-
-            using (var fileStream = new FileStream("gradient.dds", FileMode.Open))
-            {
-                var dds2 = DDS.DDS.read(fileStream);
-
-                fileStream.Close();
-
-                if (dds.width != dds2.width)
+                File.Delete("gradient.dds");
+                using (var fileStream = new FileStream("gradient.dds", FileMode.OpenOrCreate))
                 {
-                    Console.WriteLine("Written and read DDS files have different width!");
+                    dds.write(fileStream);
+
+                    fileStream.Close();
                 }
 
-                if (dds.height != dds2.height)
+                using (var fileStream = new FileStream("gradient.dds", FileMode.Open))
                 {
-                    Console.WriteLine("Written and read DDS files have different height!");
+                    var dds2 = DDS.DDS.read(fileStream);
+
+                    fileStream.Close();
+
+                    if (dds.width != dds2.width)
+                    {
+                        Console.WriteLine("Written and read DDS files have different width!");
+                    }
+
+                    if (dds.height != dds2.height)
+                    {
+                        Console.WriteLine("Written and read DDS files have different height!");
+                    }
+                }
+            }
+
+            // Test converting example.dds into example.bmp
+            {
+                Image image = null;
+                using (var fileStream = new FileStream("example.dds", FileMode.Open))
+                {
+                    image = DDS.DDS.read(fileStream);
+
+                    fileStream.Close();
+                }
+
+                File.Delete("example.bmp");
+                using (var fileStream = new FileStream("example.bmp", FileMode.OpenOrCreate))
+                {
+                    BMP.BMP bmp = image;
+                    bmp.write(fileStream);
+
+                    fileStream.Close();
                 }
             }
         }
