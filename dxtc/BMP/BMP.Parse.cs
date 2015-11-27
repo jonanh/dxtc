@@ -84,8 +84,6 @@ namespace dxtc.BMP
             // Optimize loop if there is no adding
             if (paddingBuffer.Length > 0)
             {
-                paddingBuffer = new byte[1];
-
                 uint index = 0;
                 for (uint i = 0; i < _height; i++)
                 {

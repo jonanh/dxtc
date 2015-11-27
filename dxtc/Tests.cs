@@ -139,8 +139,8 @@ namespace dxtc
                     Console.WriteLine("Saved and read gradient image contain different height!");
                 }
 
-                var color0 = gradient[5, 4];
-                var color1 = bmp[5, 4];
+                Image.Color color0 = gradient[5, 4];
+                Image.Color color1 = bmp[5, 4];
 
                 if (!color0.Equals(color1))
                 {
