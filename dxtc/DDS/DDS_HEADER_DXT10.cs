@@ -53,7 +53,7 @@ namespace dxtc.DDS
 
         // https://msdn.microsoft.com/en-us/library/windows/desktop/bb173059(v=vs.85).aspx
 
-        public enum DXGI_FORMAT : UInt32
+        public enum DXGI_FORMAT : uint
         {
             DXGI_FORMAT_UNKNOWN = 0,
             DXGI_FORMAT_R32G32B32A32_TYPELESS = 1,
@@ -177,7 +177,7 @@ namespace dxtc.DDS
             //DXGI_FORMAT_FORCE_UINT = 0xffffffff
         }
 
-        public enum D3D10_RESOURCE_DIMENSION : UInt32
+        public enum D3D10_RESOURCE_DIMENSION : uint
         {
             D3D10_RESOURCE_DIMENSION_UNKNOWN = 0,
             D3D10_RESOURCE_DIMENSION_BUFFER = 1,
