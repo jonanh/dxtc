@@ -74,6 +74,10 @@ namespace dxtc
             {
             }
 
+            public Color(double r, double g, double b) : this(clamp(r), clamp(g), clamp(b))
+            {
+            }
+
             #region Operators
 
             public static Color operator+(Color c1, Color c2)
@@ -156,6 +160,21 @@ namespace dxtc
                     return 255;
 
                 return (byte)value;
+            }
+
+            /// <summary>
+            /// Clamp the specified value to avoid exceptions by overflows.
+            /// </summary>
+            /// <param name="value">Value.</param>
+            private static byte clamp(double value)
+            {
+                if (value < 0f)
+                    return 0;
+
+                if (value > 255f)
+                    return 255;
+
+                return (byte)Math.Round(value);
             }
 
             #region Some default values
