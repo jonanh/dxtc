@@ -38,7 +38,7 @@ namespace dxtc.DDS
             }
 
             // Decode from bitarray
-            for(uint i = 16; i > 0; i++)
+            for(int i = 15; i >= 0; i--)
             {
                 var index = (byte)(indices & 0x3);
                 pixels[i] = colors[index];
@@ -63,7 +63,7 @@ namespace dxtc.DDS
             }
 
             // For each pixel in the texel block
-            for(byte i = 16; i > 0; i++)
+            for(int i = 15; i >= 0; i--)
             {
                 // Select the closer color from the 4 colors
                 var currentColor = pixels[i];
@@ -93,12 +93,13 @@ namespace dxtc.DDS
             // Convert into a bitarray
             UInt32 indices = 0;
 
-            uint i = 16;
+            uint i = 15;
             foreach(byte index in block.indexes)
             {
                 indices |= (index & 0x3u);
                 if (i > 0)
                 {
+                    i--;
                     indices = indices << 2;
                 }
             }

@@ -166,6 +166,32 @@ namespace dxtc
             {
                 Console.WriteLine("DDS file has an incorrent height!");
             }
+
+            // Test writting and reading back
+            File.Delete("gradient.dds");
+            using (var fileStream = new FileStream("gradient.dds", FileMode.OpenOrCreate))
+            {
+                dds.write(fileStream);
+
+                fileStream.Close();
+            }
+
+            using (var fileStream = new FileStream("gradient.dds", FileMode.Open))
+            {
+                var dds2 = DDS.DDS.read(fileStream);
+
+                fileStream.Close();
+
+                if (dds.width != dds2.width)
+                {
+                    Console.WriteLine("Written and read DDS files have different width!");
+                }
+
+                if (dds.height != dds2.height)
+                {
+                    Console.WriteLine("Written and read DDS files have different height!");
+                }
+            }
         }
 
         public static void TestColorChange()

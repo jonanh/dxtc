@@ -80,12 +80,10 @@ namespace dxtc.DDS
 
             writeIndex += stream.WriteStruct(ddsHeaderDXT10);
 
-            var size = height * width;
-
-            for (uint i = 0; i < size; i++)
+            foreach (var block in blocks)
             {
-                DDS_DXT1Block block = blocks[i];
-                stream.WriteStruct(block);
+                DDS_DXT1Block structBlock = block;
+                stream.WriteStruct(structBlock);
             }
         }
     }
