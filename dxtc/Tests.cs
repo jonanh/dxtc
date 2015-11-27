@@ -4,6 +4,7 @@ using System.IO;
 namespace dxtc
 {
     using BMP;
+    using DDS;
 
     public static class Tests
     {
@@ -13,6 +14,7 @@ namespace dxtc
             Tests.TestStructSizes();
             Tests.TestReadBmp();
             Tests.TestWriteBmp();
+            Tests.TestDDS();
             Tests.TestColorChange();
         }
 
@@ -87,6 +89,7 @@ namespace dxtc
         public static void TestWriteBmp()
         {
             BMP.BMP bmp;
+            Image gradient = gradientImage();
 
             // Load the example test.bmp
             using (var fileStream = new FileStream("test.bmp", FileMode.Open))
@@ -100,35 +103,68 @@ namespace dxtc
             File.Delete("test2.bmp");
             using (var fileStream2 = new FileStream("test2.bmp", FileMode.OpenOrCreate))
             {
+                // Convert to image and back to bmp
                 Image image = bmp;
-                BMP.BMP bmp2 = image;
+                bmp = image;
 
-                bmp2.write(fileStream2);
+                bmp.write(fileStream2);
                 fileStream2.Close();
             }
 
             // Check the padding and content generating a gradient
-            File.Delete("test3.bmp");
-            using (var fileStream = new FileStream("test3.bmp", FileMode.OpenOrCreate))
+            File.Delete("gradient.bmp");
+            using (var fileStream = new FileStream("gradient.bmp", FileMode.OpenOrCreate))
             {
-                var image = new Image(17, 17);
-
-                uint index = 0;
-                for(uint i = 0; i < image.height; i++)
-                {
-                    for(uint j = 0; j < image.width; j++, index++)
-                    {
-                        image[index] = new Image.Color(i * 10u, j * 10u, 0);
-                    }
-                }
-
-                // Generate the bmp
-                bmp = image;
+                // Convert to BMP
+                bmp = gradient;
 
                 // Write it to the disk
                 bmp.write(fileStream);
 
                 fileStream.Close();
+            }
+
+            // Check the saved grandient
+            using (var fileStream = new FileStream("gradient.bmp", FileMode.Open))
+            {
+                bmp = BMP.BMP.read(fileStream);
+
+                if (bmp.width != gradient.width)
+                {
+                    Console.WriteLine("Saved and read gradient image contain different width!");
+                }
+
+                if (bmp.uheight != gradient.height)
+                {
+                    Console.WriteLine("Saved and read gradient image contain different height!");
+                }
+
+                var color0 = gradient[5, 4];
+                var color1 = bmp[5, 4];
+
+                if (!color0.Equals(color1))
+                {
+                    Console.WriteLine("Saved and read gradient image contain different pixels!");
+                }
+
+                fileStream.Close();
+            }
+        }
+
+        public static void TestDDS()
+        {
+            Image gradient = gradientImage();
+
+            DDS.DDS dds = gradient;
+
+            if (dds.width != (uint)(Math.Ceiling(gradient.width / 4f) * 4))
+            {
+                Console.WriteLine("DDS file has an incorrent width!");
+            }
+
+            if (dds.height != (uint)(Math.Ceiling(gradient.height / 4f) * 4))
+            {
+                Console.WriteLine("DDS file has an incorrent height!");
             }
         }
 
@@ -157,6 +193,22 @@ namespace dxtc
             {
                 Console.WriteLine("White pixel convertion failed!");
             }
+        }
+
+        public static Image gradientImage()
+        {
+            var image = new Image(23, 17);
+
+            uint index = 0;
+            for(uint i = 0; i < image.height; i++)
+            {
+                for(uint j = 0; j < image.width; j++, index++)
+                {
+                    image[index] = new Image.Color(i * 10u, j * 10u, 0);
+                }
+            }
+
+            return image;
         }
     }
 }
