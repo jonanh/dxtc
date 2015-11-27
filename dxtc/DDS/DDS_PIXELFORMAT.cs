@@ -43,7 +43,7 @@ namespace dxtc.DDS
                 return new DDS_PIXELFORMAT
                 {
                     dwSize = DDS_PIXELFORMAT.size,
-                    dwFlags = Flags.DDPF_RGB,
+                    dwFlags = Flags.DDPF_FOURCC,
                     dwFourCC = FOURCC.DXT1,
                     dwRGBBitCount = 16,
                     dwRBitMask = ColorR5G6B5.RMask,
@@ -86,6 +86,7 @@ namespace dxtc.DDS
         public enum FOURCC
         {
             DXT1 = 827611204,
+            DX10 = 808540228,
         }
 
         // MakeFourCC allows to generate the value the FourCCFlags
