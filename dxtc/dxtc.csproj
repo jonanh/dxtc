@@ -42,15 +42,17 @@
     <Compile Include="BMP\BITMAPFILEHEADER.cs" />
     <Compile Include="BMP\BITMAPINFOHEADER.cs" />
     <Compile Include="BMP\BITMAPV5HEADER.cs" />
-    <Compile Include="BMP\BMPParse.cs" />
     <Compile Include="DDS\DDS.cs" />
     <Compile Include="DDS\DDS_PIXELFORMAT.cs" />
     <Compile Include="DDS\DDS_HEADER_DXT10.cs" />
     <Compile Include="DDS\DDS_HEADER.cs" />
-    <Compile Include="DDS\DDSParse.cs" />
     <Compile Include="DDS\DDS_DXT1Block.cs" />
     <Compile Include="DDS\DXT1Block.cs" />
     <Compile Include="DDS\TexelBlock.cs" />
+    <Compile Include="BMP\BMP.Converter.cs" />
+    <Compile Include="BMP\BMP.Parse.cs" />
+    <Compile Include="DDS\DDS.Parse.cs" />
+    <Compile Include="DDS\DDS.Converter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
