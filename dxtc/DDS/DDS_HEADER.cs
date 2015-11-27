@@ -73,6 +73,7 @@ namespace dxtc.DDS
                 dwCaps3 = 0,
                 dwCaps4 = 0,
                 dwReserved2 = 0,
+                dwPitchOrLinearSize = width * height / 2,
             };
         }
 
@@ -93,7 +94,7 @@ namespace dxtc.DDS
             DDSD_LINEARSIZE = 0x80000,
             DDSD_DEPTH = 0x800000,
 
-            DDS_HEADER_FLAGS_TEXTURE = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT,
+            DDS_HEADER_FLAGS_TEXTURE = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT | DDSD_MIPMAPCOUNT,
         };
 
         [Flags]
