@@ -15,6 +15,13 @@ namespace dxtc.DDS
 
         public void decode(Image.Color color0, Image.Color color1, UInt32 indices)
         {
+            colors[0] = color0;
+            colors[1] = color1;
+
+            // Select color2 and color3 following the COMPRESSED_RGB_S3TC_DXT1_EXT spec
+            // 
+            // https://www.opengl.org/registry/specs/EXT/texture_compression_s3tc.txt
+            // 
             if (color0 > color1)
             {
                 colors[2] = new Image.Color(
