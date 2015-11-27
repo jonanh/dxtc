@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace dxtc
+namespace dxtc.DDS
 {
     // https://msdn.microsoft.com/en-us/library/windows/desktop/bb943984(v=vs.85).aspx
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct DDSPixelFormat
+    public struct DDS_PIXELFORMAT
     {
         #region Fields
 
@@ -36,19 +36,19 @@ namespace dxtc
 
         #region Constructors
 
-        public static DDSPixelFormat D3FMT_R5G6B5_Format
+        public static DDS_PIXELFORMAT D3FMT_R5G6B5_Format
         {
             get
             {
-                return new DDSPixelFormat
+                return new DDS_PIXELFORMAT
                 {
-                    dwSize = DDSPixelFormat.size,
+                    dwSize = DDS_PIXELFORMAT.size,
                     dwFlags = Flags.DDPF_RGB,
                     dwFourCC = FOURCC.DXT1,
                     dwRGBBitCount = 16,
-                    dwRBitMask = 0xf800,
-                    dwBBitMask = 0x7e0,
-                    dwGBitMask = 0x1f,
+                    dwRBitMask = ColorR5G6B5.RMask,
+                    dwGBitMask = ColorR5G6B5.GMask,
+                    dwBBitMask = ColorR5G6B5.BMask,
                     dwABitMask = 0,
                 };
             }
@@ -111,7 +111,7 @@ namespace dxtc
             get
             {
                 // should be 32
-                return (uint)Marshal.SizeOf(typeof(DDSPixelFormat));
+                return (uint)Marshal.SizeOf(typeof(DDS_PIXELFORMAT));
             }
         }
 

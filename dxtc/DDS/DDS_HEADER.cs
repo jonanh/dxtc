@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace dxtc
+namespace dxtc.DDS
 {
     // https://msdn.microsoft.com/en-us/library/bb943982(v=vs.85).aspx
 
