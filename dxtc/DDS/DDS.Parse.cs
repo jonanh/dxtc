@@ -78,7 +78,11 @@ namespace dxtc.DDS
 
             writeIndex += stream.WriteStruct(ddsHeader);
 
-            writeIndex += stream.WriteStruct(ddsHeaderDXT10);
+            // Only read the ddsHeaderDXT10 when the FOURCC.DX10 is set
+            if (ddsHeader.ddspf.dwFourCC == DDS_PIXELFORMAT.FOURCC.DX10)
+            {
+                writeIndex += stream.WriteStruct(ddsHeaderDXT10);
+            }
 
             foreach (var block in blocks)
             {
