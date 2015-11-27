@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace dxtc
+namespace dxtc.BMP
 {
     // https://msdn.microsoft.com/en-us/library/windows/desktop/dd183376(v=vs.85).aspx
 

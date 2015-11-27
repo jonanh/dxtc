@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace dxtc
+namespace dxtc.BMP
 {
     // BITMAPV5HEADER
     // https://msdn.microsoft.com/en-us/library/windows/desktop/dd183381(v=vs.85).aspx

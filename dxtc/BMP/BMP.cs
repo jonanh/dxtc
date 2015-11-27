@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace dxtc
+namespace dxtc.BMP
 {
     public sealed partial class BMP
     {
@@ -23,8 +23,8 @@ namespace dxtc
         public BMP(uint width, int height, uint bitPerPixel = 24)
         {
             fileHeader = new BITMAPFILEHEADER(pixelArraySize(width, height, bitPerPixel));
-            infoHeader = new BITMAPINFOHEADER((int)width, (int)height, bitPerPixel);
-            pixels = new BGR[width * height];
+            infoHeader = new BITMAPINFOHEADER((int)width, height, bitPerPixel);
+            pixels = new BGR[width * Math.Abs(height)];
         }
 
         // Internal pixel representation
@@ -47,7 +47,7 @@ namespace dxtc
 
             public static implicit operator BGR(Image.Color color)
             {
-                return new Image.Color
+                return new BGR
                 {
                     r = color.r,
                     g = color.g,
@@ -58,6 +58,10 @@ namespace dxtc
 
         #region utils
 
+        /// <summary>
+        /// Gets the width from the BMP header.
+        /// </summary>
+        /// <value>The width.</value>
         public uint width
         {
             get
@@ -66,11 +70,39 @@ namespace dxtc
             }
         }
 
+        /// <summary>
+        /// Gets the height from the BMP header.
+        /// </summary>
+        /// <value>The height.</value>
         public int height
         {
             get
             {
                 return infoHeader.biHeight;
+            }
+        }
+
+        /// <summary>
+        /// Gets the unsigned height from the BMP header.
+        /// </summary>
+        /// <value>The height.</value>
+        public uint uheight
+        {
+            get
+            {
+                return (uint)Math.Abs(height);
+            }
+        }
+
+        /// <summary>
+        /// Gets the bit per pixel from the BMP header.
+        /// </summary>
+        /// <value>The bit per pixel.</value>
+        public uint bitPerPixel
+        {
+            get
+            {
+                return infoHeader.biBitCount;
             }
         }
 
@@ -100,19 +132,11 @@ namespace dxtc
             }
         }
 
-        public uint bitPerPixel
-        {
-            get
-            {
-                return infoHeader.biBitCount;
-            }
-        }
-
         public uint padding
         {
             get
             {
-                return ((bitPerPixel * width) % 32) / 8;
+                return rowSize(bitPerPixel, width) - (bitPerPixel * width / 8);
             }
         }
 
@@ -120,7 +144,7 @@ namespace dxtc
 
         public uint rowSize(uint bitPerPixel, uint width)
         {
-            return (bitPerPixel * width + 31) / 4;
+            return ((bitPerPixel * width + 31) / 32) * 4;
         }
 
         public uint pixelArraySize(uint width, int height, uint bitPerPixel)
@@ -131,8 +155,9 @@ namespace dxtc
         public static implicit operator BMP(Image image)
         {
             var bmp = new BMP(image.width, -(int)image.height);
+            var size = image.height * image.width;
 
-            for(uint i = 0; i < image.height * image.width; i++)
+            for(uint i = 0; i < size; i++)
             {
                 bmp[i] = image[i];
             }
@@ -142,7 +167,7 @@ namespace dxtc
 
         public static implicit operator Image(BMP bmp)
         {
-            var image = new Image(bmp.width, (uint)Math.Abs(bmp.height));
+            var image = new Image(bmp.width, bmp.uheight);
 
             // Bottom up
             if (bmp.height < 0)
@@ -154,12 +179,15 @@ namespace dxtc
             }
             else
             {
+                // Index to reverse the matrix from bottom to up
                 uint index = (image.height - 1) * image.width;
+                uint ii = 0;
+
                 for(uint i = 0; i < image.height; i++)
                 {
-                    for(uint j = 0; j < image.width; j++)
+                    for(uint j = 0; j < image.width; j++, ii++)
                     {
-                        image[index + j] = bmp[i];
+                        image[index + j] = bmp[ii];
                     }
 
                     index -= image.width;
