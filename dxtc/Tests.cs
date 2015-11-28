@@ -8,18 +8,15 @@ namespace dxtc
 
     public static class Tests
     {
-
         public static void Run()
         {
             Tests.TestStructSizes();
             Tests.TestReadBmp();
             Tests.TestWriteBmp();
             Tests.TestDDS();
+            Tests.TestDDSBlock();
+            Tests.TestDDS2();
             Tests.TestColorChange();
-
-            // The command line finishes too fast on Windows
-            Console.WriteLine("Press any key");
-            Console.ReadKey();
         }
 
         public static void TestStructSizes()
@@ -171,52 +168,137 @@ namespace dxtc
                 Console.WriteLine("DDS file has an incorrent height!");
             }
 
-            // Check reading our own written files
+            Image image2 = dds;
+
+            Image.Color color0 = image2[5, 4];
+            Image.Color color1 = gradient[5, 4];
+
+            if (!color0.Equals(color1))
             {
-                File.Delete("gradient.dds");
-                using (var fileStream = new FileStream("gradient.dds", FileMode.OpenOrCreate))
-                {
-                    dds.write(fileStream);
+                Console.WriteLine("Image -> DDS -> Image fails pixel data!");
+            }
+        }
 
-                    fileStream.Close();
-                }
+        public static void TestDDSBlock()
+        {
+            // R5G6B5 lossless color
+            var color = new Image.Color(248, 252, 248);
 
-                using (var fileStream = new FileStream("gradient.dds", FileMode.Open))
-                {
-                    var dds2 = DDS.DDS.read(fileStream);
+            // Image with a single block
+            Image image = new Image(4, 4, color);
 
-                    fileStream.Close();
+            // Image -> DDS
+            DDS.DDS dds = image;
 
-                    if (dds.width != dds2.width)
-                    {
-                        Console.WriteLine("Written and read DDS files have different width!");
-                    }
-
-                    if (dds.height != dds2.height)
-                    {
-                        Console.WriteLine("Written and read DDS files have different height!");
-                    }
-                }
+            if (dds.horizontalBlocks != 1 || dds.verticalBlocks != 1)
+            {
+                Console.WriteLine("DDS file has an incorrent number of blocks!");
             }
 
-            // Test converting example.dds into example.bmp
+            if (!dds[0][0].Equals(color) || !dds[0][0].Equals(color))
             {
-                Image image = null;
-                using (var fileStream = new FileStream("example.dds", FileMode.Open))
-                {
-                    image = DDS.DDS.read(fileStream);
+                Console.WriteLine("DDS block has an incorrent color!");
+            }
 
-                    fileStream.Close();
-                }
+            // Get serialized block struct
+            DDS_DXT1Block structBlock = dds[0];
+            Image.Color color2 = structBlock.color0;
 
-                File.Delete("example.bmp");
-                using (var fileStream = new FileStream("example.bmp", FileMode.OpenOrCreate))
-                {
-                    BMP.BMP bmp = image;
-                    bmp.write(fileStream);
+            if (!color2.Equals(color) || (structBlock.indices & 0x3) != 0)
+            {
+                Console.WriteLine("StructBlock contains incorrect colors!");
+            }
 
-                    fileStream.Close();
-                }
+            // Set some colors to black and get the block again
+            image[7] = Image.Color.Black;
+            image[15] = Image.Color.Black;
+            // image -> dds -> block -> struct block -> block
+            dds = image;
+            structBlock = dds[0];
+            DXT1Block block = structBlock;
+
+            var color3 = block[0];
+            var color4 = block[7];
+            var color5 = block[15];
+
+            if (!color3.Equals(color) ||
+                !color4.Equals(Image.Color.Black) ||
+                !color5.Equals(Image.Color.Black))
+            {
+                Console.WriteLine("DDS failed saving/restoring 2 colors!");
+            }
+
+            // Let's save the file and see what happens
+
+            File.Delete("block.dds");
+            using (var fileStream = new FileStream("block.dds", FileMode.OpenOrCreate))
+            {
+                dds.write(fileStream);
+
+                fileStream.Close();
+            }
+
+            DDS.DDS dds2;
+            using (var fileStream = new FileStream("block.dds", FileMode.OpenOrCreate))
+            {
+                dds2 = DDS.DDS.read(fileStream);
+                fileStream.Close();
+            }
+
+            block = dds2[0];
+
+            color3 = block[0];
+            color4 = block[7];
+            color5 = block[15];
+
+            if (!color3.Equals(color) ||
+                !color4.Equals(Image.Color.Black) ||
+                !color5.Equals(Image.Color.Black))
+            {
+                Console.WriteLine("DDS failed saving/restoring 2 colors!");
+            }
+        }
+
+        public static void TestDDS2()
+        {
+            Image image = null;
+            DDS.DDS dss = null;
+            BMP.BMP bmp = null;
+
+            // Read BMP
+            using (var fileStream = new FileStream("forest4.bmp", FileMode.Open))
+            {
+                image = BMP.BMP.read(fileStream);
+
+                fileStream.Close();
+            }
+
+            // Write DDS
+            File.Delete("forest4.dds");
+            using (var fileStream = new FileStream("forest4.dds", FileMode.OpenOrCreate))
+            {
+                dss = image;
+                dss.write(fileStream);
+
+                fileStream.Close();
+            }
+
+            // Read DDS
+            using (var fileStream = new FileStream("forest4.dds", FileMode.OpenOrCreate))
+            {
+                image = DDS.DDS.read(fileStream);
+
+                fileStream.Close();
+            }
+
+            // See what happened in a BMP
+            File.Delete("forest5.bmp");
+            using (var fileStream = new FileStream("forest5.bmp", FileMode.OpenOrCreate))
+            {
+                bmp = image;
+                bmp.write(fileStream);
+
+                fileStream.Close();
             }
         }
 
