@@ -85,7 +85,7 @@ namespace dxtc.DDS
 
             var value = ((color.r & 0xf8u) << (6 + 5 - 3)) |
                         ((color.g & 0xfcu) << (5 - 2)) |
-                        ((color.g & 0xf8u) >> (3));
+                        ((color.b & 0xf8u) >> (3));
             
             return new ColorR5G6B5
             {
