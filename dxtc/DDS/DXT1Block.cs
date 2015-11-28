@@ -9,43 +9,44 @@ namespace dxtc.DDS
         #region Fields
 
         public Image.Color[] colors = new Image.Color[4];
-        private byte[] indexes = new byte[16];
+        private UInt32 indices;
 
         #endregion
 
-        public void decode(Image.Color color0, Image.Color color1, UInt32 indices)
+        public void decode(ColorR5G6B5 colorOrig0, ColorR5G6B5 colorOrig1, UInt32 indices)
         {
-            colors[0] = color0;
-            colors[1] = color1;
+            var color0 = colors[0] = colorOrig0;
+            var color1 = colors[1] = colorOrig1;
 
             // Select color2 and color3 following the COMPRESSED_RGB_S3TC_DXT1_EXT spec
             // 
             // https://www.opengl.org/registry/specs/EXT/texture_compression_s3tc.txt
             // 
-            if (color0 > color1)
+
+            if (colorOrig0.value >= colorOrig1.value)
             {
                 colors[2] = new Image.Color(
-                    (2f * color0.r + color1.r) / 3,
-                    (2f * color0.g + color1.g) / 3,
-                    (2f * color0.b + color1.b) / 3);
+                    (2f * color0.r + color1.r) / 3f,
+                    (2f * color0.g + color1.g) / 3f,
+                    (2f * color0.b + color1.b) / 3f);
 
                 colors[3] = new Image.Color(
-                    (color0.r + 2f * color1.r) / 3,
-                    (color0.g + 2f * color1.g) / 3,
-                    (color0.b + 2f * color1.b) / 3);
+                    (color0.r + 2f * color1.r) / 3f,
+                    (color0.g + 2f * color1.g) / 3f,
+                    (color0.b + 2f * color1.b) / 3f);
             }
             else
             {
                 colors[2] = new Image.Color(
-                    (color0.r + color1.r) / 2,
-                    (color0.g + color1.g) / 2,
-                    (color0.b + color1.b) / 2);
+                    (color0.r + color1.r) / 2f,
+                    (color0.g + color1.g) / 2f,
+                    (color0.b + color1.b) / 2f);
 
                 colors[3] = Image.Color.Black;
             }
 
             // Decode from bitarray
-            for(int i = 15; i >= 0; i--)
+            for(int i = 0; i < 16; i++)
             {
                 var index = (byte)(indices & 0x3);
                 pixels[i] = colors[index];
@@ -53,42 +54,163 @@ namespace dxtc.DDS
             }
         }
 
+        private const double startDistance = 100000;
+
         public void encode()
         {
-            // Select min/max colors
+            // The idea is to get the most distant complementary colors in a simple way
+            // A simple algorithm with an O(n) function cost
+
+            var nearRed     = pixels[0];
+            var nearGreen   = pixels[0];
+            var nearBlue    = pixels[0];
+            var nearYellow  = pixels[0];
+            var nearCyan    = pixels[0];
+            var nearMarge   = pixels[0];
+            var nearWhite   = pixels[0];
+            var nearBlack   = pixels[0];
+
+            var distRed = startDistance;
+            var distGreen = startDistance;
+            var distBlue = startDistance;
+            var distYellow = startDistance;
+            var distCyan = startDistance;
+            var distMarge = startDistance;
+            var distWhite = startDistance;
+            var distBlack = startDistance;
+
+            var newDistance = startDistance;
+
+            // First we will check the closest color to each axis
             foreach (var color in pixels)
             {
-                if (colors[0] < color)
+                newDistance = Image.Color.Red.distance(color);
+                if (newDistance < distRed)
                 {
-                    colors[0] = color;
+                    nearRed = color;
+                    distRed = newDistance;
                 }
 
-                if (colors[1] > color)
+                newDistance = Image.Color.Green.distance(color);
+                if (newDistance < distGreen)
                 {
-                    colors[1] = color;
+                    nearGreen = color;
+                    distGreen = newDistance;
+                }
+
+                newDistance = Image.Color.Blue.distance(color);
+                if (newDistance < distBlue)
+                {
+                    nearBlue = color;
+                    distBlue = newDistance;
+                }
+
+                newDistance = Image.Color.Yellow.distance(color);
+                if (newDistance < distYellow)
+                {
+                    nearYellow = color;
+                    distYellow = newDistance;
+                }
+
+                newDistance = Image.Color.Cyan.distance(color);
+                if (newDistance < distCyan)
+                {
+                    nearCyan = color;
+                    distCyan = newDistance;;
+                }
+
+                newDistance = Image.Color.Margenta.distance(color);
+                if (newDistance < distMarge)
+                {
+                    nearMarge = color;
+                    distMarge = newDistance;
+                }
+
+                newDistance = Image.Color.White.distance(color);
+                if (newDistance < distWhite)
+                {
+                    nearWhite = color;
+                    distWhite = newDistance;
+                }
+
+                newDistance = Image.Color.Black.distance(color);
+                if (newDistance < distBlack)
+                {
+                    nearBlack = color;
+                    distBlack = newDistance;
                 }
             }
 
+            // Get the most distant complementary colors
+            var lastDistance = nearRed.distance(nearCyan);
+            colors[0] = nearRed;
+            colors[1] = nearCyan;
+
+            newDistance = nearBlue.distance(nearYellow);
+            if (lastDistance < newDistance)
+            {
+                colors[0] = nearBlue;
+                colors[1] = nearYellow;
+                lastDistance = newDistance;
+            }
+
+            newDistance = nearGreen.distance(nearMarge);
+            if (lastDistance < newDistance)
+            {
+                colors[0] = nearGreen;
+                colors[1] = nearMarge;
+            }
+
+            newDistance = nearWhite.distance(nearBlack);
+            if (lastDistance < newDistance)
+            {
+                colors[0] = nearWhite;
+                colors[1] = nearBlack;
+            }
+
+            // By default make color0 bigger than color1, so we get
+            // more interpolation values
+
+            if (colors[0] < colors[1]) 
+            {
+                var temp = colors[0];
+                colors[0] = colors[1];
+                colors[1] = temp;
+            }
+
+            // Calculate the colors after the selection
+
+            colors[2] = new Image.Color(
+                (2f * colors[0].r + colors[1].r) / 3f,
+                (2f * colors[0].g + colors[1].g) / 3f,
+                (2f * colors[0].b + colors[1].b) / 3f);
+
+            colors[3] = new Image.Color(
+                (colors[0].r + 2f * colors[1].r) / 3f,
+                (colors[0].g + 2f * colors[1].g) / 3f,
+                (colors[0].b + 2f * colors[1].b) / 3f);
+            
+
             // For each pixel in the texel block
-            for(int i = 15; i >= 0; i--)
+            for(int i = 0; i < 16; i++)
             {
                 // Select the closer color from the 4 colors
                 var currentColor = pixels[i];
-                var currentDistance = Math.Abs(currentColor.distance(colors[0]));
-                byte candidateColor = 0;
+                lastDistance = currentColor.distance(colors[0]);
+                uint candidateColor = 0;
 
-                for(byte j = 1; j < 4; j++)
+                for(uint j = 1; j < 4; j++)
                 {
-                    var newDistance = Math.Abs(currentColor.distance(colors[j]));
-                    if (newDistance < currentDistance)
+                    newDistance = currentColor.distance(colors[j]);
+                    if (newDistance < lastDistance)
                     {
-                        currentDistance = newDistance;
+                        lastDistance = newDistance;
                         candidateColor = j;
                     }
                 }
 
                 // Save it in the index array
-                indexes[i] = candidateColor;
+                indices |= ((candidateColor & 0x3) << (i * 2));
             }
         }
 
@@ -97,25 +219,11 @@ namespace dxtc.DDS
             // Encode selecting the colors and generating the index
             block.encode();
 
-            // Convert into a bitarray
-            UInt32 indices = 0;
-
-            uint i = 15;
-            foreach(byte index in block.indexes)
-            {
-                indices |= (index & 0x3u);
-                if (i > 0)
-                {
-                    i--;
-                    indices = indices << 2;
-                }
-            }
-
             return new DDS_DXT1Block
             {
                 color0 = block.colors[0],
                 color1 = block.colors[1],
-                indices = indices,
+                indices = block.indices,
             };
         }
 
