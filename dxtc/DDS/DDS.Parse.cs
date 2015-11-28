@@ -13,6 +13,11 @@ namespace dxtc.DDS
         public struct DDS_Magic
         {
             public UInt32 dwMagic;
+
+            public DDS_Magic()
+            {
+                dwMagic = Magic;
+            }
         }
 
         /*
@@ -85,6 +90,7 @@ namespace dxtc.DDS
         {
             int writeIndex = 0;
 
+            // Add the file signature
             writeIndex += stream.WriteStruct(new DDS_Magic());
 
             writeIndex += stream.WriteStruct(ddsHeader);
