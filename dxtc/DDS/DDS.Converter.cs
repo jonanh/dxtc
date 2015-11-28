@@ -19,8 +19,8 @@ namespace dxtc.DDS
                 for(uint j = 0; j < _width; j++)
                 {
                     // Check the boundaries of the image, repeat the last valid value per axis
-                    var ii = i >= _imgwidth ? _imgwidth - 1 : i;
-                    var jj = j >= _imgheight ? _imgheight - 1 : j;
+                    var ii = i >= _imgheight ? _imgheight - 1 : i;
+                    var jj = j >= _imgwidth ? _imgwidth - 1 : j;
 
                     // Get the 4x4 block coordinate and the block
                     var iii = i / 4;
@@ -29,7 +29,7 @@ namespace dxtc.DDS
                     var block = dds[jjj, iii];
 
                     // Set the color in the block
-                    block[j % 4, i % 4] = image[ii, jj];
+                    block[j % 4, i % 4] = image[jj, ii];
                 }
             }
 
@@ -55,7 +55,7 @@ namespace dxtc.DDS
                     var block = dds[jj, ii];
 
                     // Get the color
-                    image[j, i] = block[j - jj * 4, i - ii * 4];
+                    image[j, i] = block[j % 4, i % 4];
                 }
             }
 
