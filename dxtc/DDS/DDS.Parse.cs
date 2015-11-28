@@ -51,7 +51,18 @@ namespace dxtc.DDS
 
             readIndex += stream.ReadStruct(out dds.ddsHeader);
 
-            readIndex += stream.ReadStruct(out dds.ddsHeaderDXT10);
+            // Only read the ddsHeaderDXT10 when the FOURCC.DX10 is set
+            if (dds.ddsHeader.ddspf.dwFourCC == DDS_PIXELFORMAT.FOURCC.DX10)
+            {
+                readIndex += stream.ReadStruct(out dds.ddsHeaderDXT10);
+            }
+
+            if (dds.ddsHeader.ddspf.dwRGBBitCount != 16 ||
+                dds.ddsHeader.ddspf.dwFourCC != DDS_PIXELFORMAT.FOURCC.DXT1 || 
+               (dds.ddsHeader.dwFlags & DDS_HEADER.Flags.DDSD_LINEARSIZE) == 0)
+            {
+                throw new NotImplementedException("Format not implemented");
+            }
 
             // Initialize and read DXT1 blocks
 
@@ -78,7 +89,7 @@ namespace dxtc.DDS
 
             writeIndex += stream.WriteStruct(ddsHeader);
 
-            // Only read the ddsHeaderDXT10 when the FOURCC.DX10 is set
+            // Only write the ddsHeaderDXT10 when the FOURCC.DX10 is set
             if (ddsHeader.ddspf.dwFourCC == DDS_PIXELFORMAT.FOURCC.DX10)
             {
                 writeIndex += stream.WriteStruct(ddsHeaderDXT10);

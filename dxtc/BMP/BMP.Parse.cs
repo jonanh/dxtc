@@ -1,4 +1,4 @@
-﻿
+﻿using System;
 using System.IO;
 
 namespace dxtc.BMP
@@ -15,6 +15,12 @@ namespace dxtc.BMP
             readIndex += stream.ReadStruct(out image.fileHeader);
 
             readIndex += stream.ReadStruct(out image.infoHeader);
+
+            if (image.infoHeader.biBitCount != 24 || 
+                image.infoHeader.biCompression != BITMAPINFOHEADER.CompressionMode.BI_RGB)
+            {
+                throw new NotImplementedException("Format not implemented");
+            }
 
             // Ensure we jump to the offset
             int seek = (int)image.fileHeader.bfOffBits - readIndex;
