@@ -111,25 +111,27 @@ namespace dxtc
 
             public static bool operator<(Color c1, Color c2)
             {
-                return (c1.r + c1.g + c1.b) < (c2.r + c2.g + c2.b);
+                return 
+                    (((uint)c1.r << 16) + ((uint)c1.g << 8) + (uint)c1.b) < 
+                    (((uint)c2.r << 16) + ((uint)c2.g << 8) + (uint)c2.b);
             }
 
             public static bool operator>(Color c1, Color c2)
             {
-                return (c1.r + c1.g + c1.b) > (c2.r + c2.g + c2.b);
+                return c2 < c1;
             }
 
             /// <summary>
-            /// Manhattan Distance to another color.
+            /// Distance to another color.
             /// </summary>
             /// <param name="color">Color.</param>
-            public int distance(Color color)
+            public double distance(Color color)
             {
-                var rd = Math.Abs(this.r - color.r);
-                var bd = Math.Abs(this.b - color.b);
-                var gd = Math.Abs(this.g - color.g);
+                var rd = this.r - color.r;
+                var bd = this.b - color.b;
+                var gd = this.g - color.g;
 
-                return rd + gd + bd;
+                return rd * rd + gd * gd + bd * bd;
             }
 
             #endregion
@@ -184,6 +186,46 @@ namespace dxtc
                 get
                 {
                     return new Color(255, 0, 0);
+                }
+            }
+
+            public static Color Green
+            {
+                get
+                {
+                    return new Color(0, 255, 0);
+                }
+            }
+
+            public static Color Blue
+            {
+                get
+                {
+                    return new Color(0, 0, 255);
+                }
+            }
+
+            public static Color Yellow
+            {
+                get
+                {
+                    return new Color(255, 255, 0);
+                }
+            }
+
+            public static Color Cyan
+            {
+                get
+                {
+                    return new Color(0, 255, 255);
+                }
+            }
+
+            public static Color Margenta
+            {
+                get
+                {
+                    return new Color(255, 0, 255);
                 }
             }
 
