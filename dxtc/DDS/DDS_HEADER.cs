@@ -62,22 +62,22 @@ namespace dxtc.DDS
                 dwSize = DDS_HEADER.size,
                 dwWidth = width,
                 dwHeight = height,
-                dwFlags = compressed ? 
-                    Flags.DDS_HEADER_FLAGS_TEXTURE | Flags.DDSD_LINEARSIZE :
-                    Flags.DDS_HEADER_FLAGS_TEXTURE | Flags.DDSD_PITCH,
+                dwFlags = 
+                    Flags.DDSD_CAPS | Flags.DDSD_HEIGHT | Flags.DDSD_WIDTH | Flags.DDSD_PIXELFORMAT | 
+                    Flags.DDSD_MIPMAPCOUNT | Flags.DDSD_LINEARSIZE,
                 dwMipMapCount = 0,
                 ddspf = new DDS_PIXELFORMAT
                 {
                     dwSize = DDS_PIXELFORMAT.size,
-                    dwFlags = DDS_PIXELFORMAT.Flags.DDPF_FOURCC | DDS_PIXELFORMAT.Flags.DDPF_ALPHAPIXELS,
+                    dwFlags = DDS_PIXELFORMAT.Flags.DDPF_FOURCC,
                     dwFourCC = DDS_PIXELFORMAT.FOURCC.DXT1,
-                    dwRGBBitCount = 16,
-                    dwRBitMask = ColorR5G6B5.RMask,
-                    dwGBitMask = ColorR5G6B5.GMask,
-                    dwBBitMask = ColorR5G6B5.BMask,
+                    dwRGBBitCount = 0,
+                    dwRBitMask = 0,
+                    dwGBitMask = 0,
+                    dwBBitMask = 0,
                     dwABitMask = 0,
                 },
-                dwCaps = CAPSFlags.DDSCAPS_TEXTURE,
+                dwCaps = CAPSFlags.DDSCAPS_TEXTURE | CAPSFlags.DDSCAPS_COMPLEX | CAPSFlags.DDSCAPS_MIPMAP,
                 dwCaps2 = 0,
                 dwCaps3 = 0,
                 dwCaps4 = 0,

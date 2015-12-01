@@ -57,8 +57,7 @@ namespace dxtc.DDS
                 readIndex += stream.ReadStruct(out dds.ddsHeaderDXT10);
             }
 
-            if (dds.ddsHeader.ddspf.dwRGBBitCount != 16 ||
-                dds.ddsHeader.ddspf.dwFourCC != DDS_PIXELFORMAT.FOURCC.DXT1 || 
+            if (dds.ddsHeader.ddspf.dwFourCC != DDS_PIXELFORMAT.FOURCC.DXT1 || 
                (dds.ddsHeader.dwFlags & DDS_HEADER.Flags.DDSD_LINEARSIZE) == 0)
             {
                 throw new NotImplementedException("Format not implemented");
