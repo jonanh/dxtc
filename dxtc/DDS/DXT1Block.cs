@@ -168,14 +168,13 @@ namespace dxtc.DDS
                 colors[1] = nearBlack;
             }
 
-            // By default make color0 bigger than color1, so we get
-            // more interpolation values
+            // By default make color0 smaller than color1, so we ignore the alpha bit
 
             ColorR5G6B5 color_0_R5G6B5 = colors[0];
             ColorR5G6B5 color_1_R5G6B5 = colors[1];
 
             // Compare the R5G6B5 colors
-            if (color_0_R5G6B5.value < color_1_R5G6B5.value)
+            if (color_0_R5G6B5.value > color_1_R5G6B5.value)
             {
                 var temp = colors[0];
                 colors[0] = colors[1];
@@ -185,14 +184,9 @@ namespace dxtc.DDS
             // Calculate the colors after the selection
 
             colors[2] = new Image.Color(
-                (2f * colors[0].r + colors[1].r) / 3f,
-                (2f * colors[0].g + colors[1].g) / 3f,
-                (2f * colors[0].b + colors[1].b) / 3f);
-
-            colors[3] = new Image.Color(
-                (colors[0].r + 2f * colors[1].r) / 3f,
-                (colors[0].g + 2f * colors[1].g) / 3f,
-                (colors[0].b + 2f * colors[1].b) / 3f);
+                (colors[0].r + colors[1].r) / 2f,
+                (colors[0].g + colors[1].g) / 2f,
+                (colors[0].b + colors[1].b) / 2f);
             
 
             // For each pixel in the texel block
@@ -203,7 +197,7 @@ namespace dxtc.DDS
                 lastDistance = currentColor.distance(colors[0]);
                 uint candidateColor = 0;
 
-                for(uint j = 1; j < 4; j++)
+                for(uint j = 1; j < 3; j++)
                 {
                     newDistance = currentColor.distance(colors[j]);
                     if (newDistance < lastDistance)
