@@ -34,29 +34,6 @@ namespace dxtc.DDS
         #endregion
 
 
-        #region Constructors
-
-        public static DDS_PIXELFORMAT D3FMT_R5G6B5_Format
-        {
-            get
-            {
-                return new DDS_PIXELFORMAT
-                {
-                    dwSize = DDS_PIXELFORMAT.size,
-                    dwFlags = Flags.DDPF_FOURCC,
-                    dwFourCC = FOURCC.DXT1,
-                    dwRGBBitCount = 16,
-                    dwRBitMask = ColorR5G6B5.RMask,
-                    dwGBitMask = ColorR5G6B5.GMask,
-                    dwBBitMask = ColorR5G6B5.BMask,
-                    dwABitMask = 0,
-                };
-            }
-        }
-
-        #endregion
-
-
         #region Flags
 
         [Flags]

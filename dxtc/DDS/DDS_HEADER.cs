@@ -66,12 +66,22 @@ namespace dxtc.DDS
                     Flags.DDS_HEADER_FLAGS_TEXTURE | Flags.DDSD_LINEARSIZE :
                     Flags.DDS_HEADER_FLAGS_TEXTURE | Flags.DDSD_PITCH,
                 dwMipMapCount = 0,
-                dwReserved1 = new uint[11],
-                ddspf = DDS_PIXELFORMAT.D3FMT_R5G6B5_Format,
+                ddspf = new DDS_PIXELFORMAT
+                {
+                    dwSize = DDS_PIXELFORMAT.size,
+                    dwFlags = DDS_PIXELFORMAT.Flags.DDPF_FOURCC | DDS_PIXELFORMAT.Flags.DDPF_ALPHAPIXELS,
+                    dwFourCC = DDS_PIXELFORMAT.FOURCC.DXT1,
+                    dwRGBBitCount = 16,
+                    dwRBitMask = ColorR5G6B5.RMask,
+                    dwGBitMask = ColorR5G6B5.GMask,
+                    dwBBitMask = ColorR5G6B5.BMask,
+                    dwABitMask = 0,
+                },
                 dwCaps = CAPSFlags.DDSCAPS_TEXTURE,
                 dwCaps2 = 0,
                 dwCaps3 = 0,
                 dwCaps4 = 0,
+                dwReserved1 = new uint[11],
                 dwReserved2 = 0,
                 dwPitchOrLinearSize = width * height / 2,
             };
