@@ -171,7 +171,11 @@ namespace dxtc.DDS
             // By default make color0 bigger than color1, so we get
             // more interpolation values
 
-            if (colors[0] < colors[1]) 
+            ColorR5G6B5 color_0_R5G6B5 = colors[0];
+            ColorR5G6B5 color_1_R5G6B5 = colors[1];
+
+            // Compare the R5G6B5 colors
+            if (color_0_R5G6B5.value < color_1_R5G6B5.value)
             {
                 var temp = colors[0];
                 colors[0] = colors[1];
