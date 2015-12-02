@@ -183,19 +183,22 @@ namespace dxtc.DDS
             }
 
             // Calculate the colors after the selection
+            if (color_0_R5G6B5.value != color_1_R5G6B5.value)
+            {
+                colors[2] = new Image.Color(
+                    (2f * colors[0].r + colors[1].r) / 3f,
+                    (2f * colors[0].g + colors[1].g) / 3f,
+                    (2f * colors[0].b + colors[1].b) / 3f);
 
-            colors[2] = new Image.Color(
-                (2f * colors[0].r + colors[1].r) / 3f,
-                (2f * colors[0].g + colors[1].g) / 3f,
-                (2f * colors[0].b + colors[1].b) / 3f);
-
-            colors[3] = new Image.Color(
-                (colors[0].r + 2f * colors[1].r) / 3f,
-                (colors[0].g + 2f * colors[1].g) / 3f,
-                (colors[0].b + 2f * colors[1].b) / 3f);
-            
-            // Use third color?
-            int last_color = color_0_R5G6B5.value > color_1_R5G6B5.value ? 4 : 3;
+                colors[3] = new Image.Color(
+                    (colors[0].r + 2f * colors[1].r) / 3f,
+                    (colors[0].g + 2f * colors[1].g) / 3f,
+                    (colors[0].b + 2f * colors[1].b) / 3f);
+            }
+            else
+            {
+                colors[2] = colors[3] = colors[1];
+            }
 
             // For each pixel in the texel block
             for(int i = 0; i < 16; i++)
@@ -205,7 +208,7 @@ namespace dxtc.DDS
                 lastDistance = currentColor.distance(colors[0]);
                 uint candidateColor = 0;
 
-				for(uint j = 1; j < last_color; j++)
+				for(uint j = 1; j < 4; j++)
                 {
                     newDistance = currentColor.distance(colors[j]);
                     if (newDistance < lastDistance)
