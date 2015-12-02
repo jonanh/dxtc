@@ -177,28 +177,25 @@ namespace dxtc.DDS
             // Compare the R5G6B5 colors
             if (color_0_R5G6B5.value < color_1_R5G6B5.value)
             {
-                var temp = colors[0];
-                colors[0] = colors[1];
-                colors[1] = temp;
-            }
-
-            // Calculate the colors after the selection
-            if (color_0_R5G6B5.value != color_1_R5G6B5.value)
-            {
-                colors[2] = new Image.Color(
-                    (2f * colors[0].r + colors[1].r) / 3f,
-                    (2f * colors[0].g + colors[1].g) / 3f,
-                    (2f * colors[0].b + colors[1].b) / 3f);
-
-                colors[3] = new Image.Color(
-                    (colors[0].r + 2f * colors[1].r) / 3f,
-                    (colors[0].g + 2f * colors[1].g) / 3f,
-                    (colors[0].b + 2f * colors[1].b) / 3f);
+                colors[1] = color_1_R5G6B5;
+                colors[0] = color_0_R5G6B5;
             }
             else
             {
-                colors[2] = colors[3] = colors[1];
+                colors[0] = color_0_R5G6B5;
+                colors[1] = color_1_R5G6B5;
             }
+
+            // Calculate the colors after the selection
+            colors[2] = new Image.Color(
+                (2f * colors[0].r + colors[1].r) / 3f,
+                (2f * colors[0].g + colors[1].g) / 3f,
+                (2f * colors[0].b + colors[1].b) / 3f);
+
+            colors[3] = new Image.Color(
+                (colors[0].r + 2f * colors[1].r) / 3f,
+                (colors[0].g + 2f * colors[1].g) / 3f,
+                (colors[0].b + 2f * colors[1].b) / 3f);
 
             // For each pixel in the texel block
             for(int i = 0; i < 16; i++)
